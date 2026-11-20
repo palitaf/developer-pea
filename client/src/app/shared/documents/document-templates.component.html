@@ -1,0 +1,475 @@
+  <div id="printArea" style="display: none;">
+    <div style="font-family: 'TH Sarabun PSK', 'TH SarabunIT๙', 'Sarabun', sans-serif; max-width: 800px; margin: 0 auto; padding: 10px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 5px;">
+        <h2 style="font-size: 22px; font-weight: bold; margin: 0;" id="printTitle">รายการวัสดุที่สั่งซื้อ</h2>
+        <span style="font-size: 16px; font-weight: bold;" id="printSubtitle"></span>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 16px;">
+        <thead>
+          <tr style="background-color: #f2f2f2;">
+            <th style="border: 1px solid #000; padding: 6px 8px; text-align: center; width: 60px;">ลำดับ</th>
+            <th style="border: 1px solid #000; padding: 6px 8px;">รายการ</th>
+            <th style="border: 1px solid #000; padding: 6px 8px; text-align: center; width: 100px;">หน่วย</th>
+            <th style="border: 1px solid #000; padding: 6px 8px; text-align: center; width: 80px;">รวม</th>
+          </tr>
+        </thead>
+        <tbody id="printTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- AREA สำหรับพิมพ์รายงานขอซื้อขอจ้าง กฟภ. (วงเงินไม่เกิน 10,000 บาท) -->
+  <div id="peaFormArea" style="display: none;">
+    <div class="pea-document" style="max-width: 750px; margin: 0 auto; padding: 10px 20px; color: #000; line-height: 1.25; font-size: 16pt;">
+      <div style="margin-bottom: 10px; text-align: left;"><img src="logo.jpg" style="width: 3.94cm; height: 2.96cm;" alt="PEA Logo"></div>
+      
+      <!-- ให้ชิดซ้ายปกติ ไม่ใส่ padding-left รวม -->
+      <div style="margin-bottom: 10px;">
+        <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif;">
+          <tr>
+            <td style="width: 50%; vertical-align: top;"><strong style="display: inline-block; width: 45px;">จาก</strong> <span id="peaFormFrom">ผสน.กฟส.ลส.</span></td>
+            <td style="width: 50%; vertical-align: top;"><strong style="display: inline-block; width: 45px;">ถึง</strong> <span id="peaFormTo">กฟส.ลส.</span></td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><strong style="display: inline-block; width: 45px;">เลขที่</strong> <span id="peaFormNo"></span></td>
+            <td style="vertical-align: top;"><strong style="display: inline-block; width: 45px;">วันที่</strong> <span id="peaFormDate"></span></td>
+          </tr>
+        </table>
+        <table style="width: 100%; border: none; border-collapse: collapse; margin-top: 4px; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif;">
+          <tr>
+            <td style="width: 45px; vertical-align: top; white-space: nowrap;"><strong>เรื่อง</strong></td>
+            <td style="vertical-align: top; text-align: justify; padding-left: 5px;">รายงานขอความเห็นชอบการจัดซื้อจัดจ้างพัสดุ ที่เกี่ยวกับค่าใช้จ่ายในการบริหารงานที่มีวงเงินการจัดซื้อจัดจ้างครั้งหนึ่งไม่เกิน ๑๐,๐๐๐ บาท</td>
+          </tr>
+        </table>
+      </div>
+      
+      <!-- บรรทัดคำว่า เรียน ชิดซ้ายปกติ และเว้นระยะหลังคำว่า เรียน -->
+      <p style="margin: 5px 0 10px 0;"><strong>เรียน</strong><span style="display: inline-block; width: 18px;"></span>ผจก.กฟส.ลส. ผ่าน ชจก.(ล) กฟส.ลส.</p>
+      <p style="text-indent: 2.5em; margin-bottom: 10px; text-align: justify; font-size: 16pt;">
+        (๑) ด้วย <span id="peaFormDeptText">ผสน.กฟส.ลส.</span> ได้ดำเนินการจัดซื้อจัดจ้างวัสดุสำนักงานเพื่อใช้สำหรับงานด้านเอกสารของ <span id="peaFormDeptText2">กฟส.หลังสวนและ กฟส.ในสังกัด</span> จำนวน <span id="peaFormItemCount">๐</span> รายการ เป็นจำนวนเงินทั้งสิ้น <span id="peaFormTotalAmount"></span> บาท <span id="peaFormTotalBahtText"></span> โดยมีรายละเอียดดังต่อไปนี้
+      </p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif;">
+  <thead>
+    <tr style="background-color: #fff;">
+      <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 35px;">ที่</th>
+      <th style="border: 1px solid #000; padding: 4px; text-align: center;">รายการพัสดุ/งานจ้าง</th>
+      <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 110px;">จำนวน/ปริมาณงาน</th>
+      <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 100px;">จำนวนเงิน (บาท)</th>
+      <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 180px;">ใบเสร็จรับเงิน/ใบส่งของเล่มที่/เลขที่/ลงวันที่</th>
+    </tr>
+  </thead>
+  <tbody id="peaFormTableBody">
+    <!-- รายการพัสดุทั้งหมดจะถูกวนลูปมาแสดงตรงนี้ -->
+  </tbody>
+  <tfoot style="display: table-row-group;">
+    <!-- แถวสรุปยอดจะแสดงต่อท้ายรายการสุดท้ายในหน้าสุดท้ายโดยอัตโนมัติ -->
+    <tr>
+      <td colspan="3" style="border: 1px solid #000; padding: 4px;">รวมเป็นเงิน (<span id="vatMarkBox">/</span> รวม <span style="display:inline-block; width:10px; height:10px; border:1px solid #000; margin-left:3px;"></span> ไม่รวม ภาษีมูลค่าเพิ่ม)</td>
+      <td style="border: 1px solid #000; padding: 4px; text-align: right; font-weight: bold;" id="peaFormSumAmount"></td>
+      <td style="border: 1px solid #000; padding: 4px;" id="peaFormBillInfoCell"></td>
+    </tr>
+    <tr>
+      <td colspan="5" style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;" id="peaFormSumBahtText"></td>
+    </tr>
+  </tfoot>
+</table>
+      <p style="text-indent: 2.5em; margin-bottom: 8px; text-align: justify; font-size: 16pt;">
+        ทั้งนี้ การดำเนินการจัดซื้อจัดจ้างดังกล่าว เป็นการดำเนินการตามหนังสือคณะกรรมการวินิจฉัยปัญหาการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ กรมบัญชีกลาง ที่ กค (กวจ) ๐๔๐๕.๒/ว ๑๑๙ ลงวันที่ ๗ มีนาคม ๒๕๖๑ เรื่อง แนวทางการปฏิบัติในการดำเนินการจัดหาพัสดุที่เกี่ยวกับค่าใช้จ่ายในการบริหารงาน... วงเงินไม่เกิน ๑๐,๐๐๐ บาท ตาราง ๑ ลำดับที่...๑๓...
+      </p>
+      <p style="text-indent: 2.5em; margin-bottom: 20px; text-align: justify; font-size: 16pt;">จึงเรียนมาเพื่อโปรดพิจารณาให้ความเห็นชอบและให้ถือรายงานนี้เป็นหลักฐานการตรวจรับพัสดุ โดยอนุโลมพร้อมอนุมัติเบิกจ่ายเงินต่อไป</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif;">
+        <div style="border: 1px solid #000; padding: 8px;">
+          <p style="margin: 0 0 3px 0;">(๒) เรียน ผจก.กฟส.ลส.</p>
+          <p style="margin: 0 0 3px 15px;">เพื่อโปรดพิจารณา</p>
+          <p style="margin: 0 0 2px 25px;">๑.ให้ความเห็นชอบการจัดซื้อจัดจ้างดังกล่าวข้างต้น</p>
+          <p style="margin: 0 0 2px 25px;">๒.อนุมัติให้จ่ายเงิน จำนวน <span id="peaSignAmount"></span> บาท</p>
+          <p style="margin: 0 0 6px 35px;" id="peaSignBahtText"></p>
+          <p style="margin: 0 0 15px 0;" id="peaAccountCodeSection">จากรหัสบัญชี <span id="peaFormAccountCode"></span> โดยใช้งบทำการ<span id="peaFormCostCenter"></span></p>
+          <div style="text-align: center; margin-top: 25px;">
+            <p style="margin: 0;">ลงชื่อ.................................ผู้บังคับบัญชาชั้นต้น</p>
+            <p style="margin: 2px 0 0 0;" id="signName2"></p>
+            <p style="margin: 2px 0 0 0;" id="signPos2"></p>
+            <p style="margin: 2px 0 0 0;">วันที่ .......................</p>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
+          <div style="border: 1px solid #000; padding: 8px; text-align: center;">
+            <p style="margin: 0 0 15px 0; text-align: left;">ลงชื่อ.................................ผู้ดำเนินการ</p>
+            <p style="margin: 0;" id="signName1"></p>
+            <p style="margin: 2px 0 0 0;" id="signPos1"></p>
+            <p style="margin: 2px 0 0 0;">วันที่ .......................</p>
+          </div>
+          <div style="border: 1px solid #000; padding: 8px; text-align: center;">
+            <p style="margin: 0 0 3px 0; text-align: left;">(๓) - เห็นชอบและอนุมัติ</p>
+            <p style="margin: 15px 0 0 0;">ลงชื่อ.................................หัวหน้าหน่วยงาน</p>
+            <p style="margin: 2px 0 0 0;" id="signName3"></p>
+            <p style="margin: 2px 0 0 0;" id="signPos3"></p>
+            <p style="margin: 2px 0 0 0;">วันที่ .......................</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4 แบบฟอร์มสำหรับวงเงินเกิน 10,000 บาท -->
+  <!-- ========================================== -->
+
+  <!-- ฟอร์มที่ 1: รายงานจัดซื้อ (วิธีเฉพาะเจาะจง) -->
+  <div id="over10kFormArea1" style="display: none;">
+    <div class="pea-document" style="max-width: 750px; margin: 0 auto; padding: 10px 20px; color: #000; line-height: 1.25; font-size: 16pt; position: relative; min-height: 1050px;">
+      
+      <!-- พื้นที่เนื้อหาด้านบนทั้งหมด -->
+      <div style="flex: 1;">
+      <div style="margin-top: 15px; margin-bottom: 12px; text-align: left;"><img src="logo.jpg" style="width: 3.94cm; height: 2.96cm;" alt="PEA Logo"></div>
+        
+        <!-- ส่วนหัว บันทึกข้อความ -->
+        <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; margin-bottom: 4px;">
+          <tr>
+            <td style="width: 50%; vertical-align: top;"><strong style="display: inline-block; width: 35px;">จาก</strong> ผสน.กฟส.ลส.</td>
+            <td style="width: 50%; vertical-align: top;"><strong style="display: inline-block; width: 35px;">ถึง</strong> ผจก.กฟส.ลส.</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top; padding-top: 4px;"><strong style="display: inline-block; width: 35px;">เลขที่</strong> ต.๑ กฟส.ลส.(สน)</td>
+            <td style="vertical-align: top; padding-top: 4px;"><strong style="display: inline-block; width: 35px;">วันที่</strong> <span class="f1-date">..........................................</span></td>
+          </tr>
+        </table>
+        <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; margin-bottom: 6px;">
+          <tr>
+            <p style="margin: 2px 0 10px 0;"><strong style="display: inline-block; width: 35px;">เรื่อง</strong> รายงานจัดซื้อวัสดุสำนักงานและวัสดุเบ็ดเตล็ดของสำนักงาน กฟส.หลังสวนและ กฟส.ในสังกัด</p>
+          </tr>
+        </table>
+        <p style="margin: 2px 0 10px 0;"><strong style="display: inline-block; width: 35px;">เรียน</strong> ผจก.กฟส.ลส. ผ่าน ชจก.(ล) กฟส.ลส.</p>
+        
+        <!-- ย่อหน้าแรก -->
+        <p style="text-indent: 5em; text-align: justify; margin-bottom: 10px;">
+          ด้วย ผสน.กฟส.ลส. มีความประสงค์จะจัดซื้อวัสดุสำนักงานและวัสดุเบ็ดเตล็ดของสำนักงาน กฟส.หลังสวนและ กฟส.ในสังกัดโดยวิธีเฉพาะเจาะจง ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. ๒๕๖๐ ตามมาตรา ๕๖(๒)(ข) และตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.๒๕๖๐ จำนวน <span class="f1-total-work">๑</span> งาน (รวม <span class="f1-total-count">๐</span> รายการ) ซึ่งมีรายละเอียดดังต่อไปนี้
+        </p>
+
+        <!-- ข้อ 1: เหตุผลและความจำเป็น -->
+        <p style="text-indent: 5em; margin: 0 0 2px 0;"><strong>๑. เหตุผลและความจำเป็นที่ต้องซื้อ/จ้าง</strong></p>
+        <p style="text-indent: 5em; margin: 0 0 2px 0;"><u style="text-decoration: underline;">เหตุผล</u> ให้ระบุเหตุผลที่จะจัดซื้อหรือจัดจ้าง</p>
+        <p style="margin: 0 0 2px 100px;">[ &nbsp; ] พัสดุไม่มีใช้หรือไม่พอใช้</p>
+        <p style="margin: 0 0 2px 100px;">[ &nbsp; ] ต้องใช้พัสดุในการบำรุงรักษา</p>
+        <p style="margin: 0 0 6px 100px;">[ &nbsp; ] อื่นๆ ระบุ...................................................................................................</p>
+        
+        <p style="text-indent: 5em; margin: 0 0 2px 0;"><u style="text-decoration: underline;">ความจำเป็น</u> ให้ระบุความจำเป็นที่จะจัดซื้อหรือจัดจ้าง</p>
+        <p style="margin: 0 0 2px 100px;">[ &nbsp; ] เพื่อให้หน่วยงานมีพัสดุสำหรับไว้ใช้งาน</p>
+        <p style="margin: 0 0 2px 100px;">[ &nbsp; ] เพื่อทดแทนพัสดุที่สิ้นเปลืองหมดไป ชำรุด หรือเสื่อมสภาพจากการใช้งานตามปกติ พัสดุเดิมสูญหาย ถูกทำลาย</p>
+        <p style="margin: 0 0 2px 100px;">[ &nbsp; ] เพื่อสำรองไว้เพื่อการทดแทนพัสดุที่ใช้อยู่ปัจจุบันไม่ให้ขาดความต่อเนื่องของการใช้งาน</p>
+        <p style="margin: 0 0 10px 100px;">[ &nbsp; ] อื่นๆ ระบุ...................................................................................................</p>
+
+        <!-- ข้อ 2: รายละเอียดของพัสดุ -->
+        <p style="text-indent: 5em; margin: 0 0 2px 0;"><strong>๒. รายละเอียดของพัสดุที่จะซื้อ/งานที่จะจ้าง</strong></p>
+        <p style="text-indent: 5em; margin: 0 0 2px 0;"><u style="text-decoration: underline;">เหตุผลการจัดซื้อ</u> ให้ระบุรายการและจำนวนวัสดุ ครุภัณฑ์และลักษณะของวัสดุ ครุภัณฑ์ที่ต้องการจะซื้อ</p>
+        <p style="margin: 0 0 8px 100px;">[ &nbsp; ] วัสดุสำนักงานและวัสดุเบ็ดเตล็ด</p>
+        
+        <table style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 10px; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif;">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 35px;">ที่</th>
+              <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 250px;">รายการ</th>
+              <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 100px;">จำนวน</th>
+              <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 90px;">หน่วย</th>
+            </tr>
+          </thead>
+          <tbody class="f1-table-body"></tbody>
+        </table>
+
+        <!-- หน้า 2 -->
+        <div style="margin-top: 20px;">
+          
+          <p style="margin: 0 0 6px 100px;">[ &nbsp; ] อื่นๆ ระบุ...................................................................................................</p>
+
+          <p style="text-indent: 5em; margin: 0 0 2px 0;"><u style="text-decoration: underline;">การจัดจ้าง</u> ให้ระบุรายการและจำนวนที่ต้องการจะจัดจ้างหรือรายการที่ต้องการจ้างเหมา</p>
+          <p style="margin: 0 0 2px 100px;">[ &nbsp; ] ซ่อมครุภัณฑ์</p>
+          <p style="margin: 0 0 2px 100px;">[ &nbsp; ] จ้างเหมาบริการ</p>
+          <p style="margin: 0 0 2px 100px;">[ &nbsp; ] จ้างก่อสร้างอาคาร</p>
+          <p style="margin: 0 0 10px 100px;">[ &nbsp; ] อื่นๆ ระบุ...................................................................................................</p>
+          
+          <p style="text-indent: 5em; margin: 0 0 2px 0;"><strong>๓. ราคากลางของพัสดุที่จะซื้อ/งานที่จะจ้าง</strong></p>
+          <p style="margin: 0 0 2px 100px;">[ &nbsp; ] (๑) ราคากลางได้มาจากการคำนวณตามหลักเกณฑ์ที่คณะกรรมการกำหนด</p>
+          <p style="margin: 0 0 2px 100px;">[ &nbsp; ] (๒) ราคาที่ได้มาจากฐานข้อมูลราคาอ้างอิงของพัสดุที่กรมบัญชีกลางจัดทำ</p>
+          <p style="margin: 0 0 2px 100px;">[ &nbsp; ] (๓) ราคามาตรฐานที่สำนักงานงบประมาณหรือหน่วยงานกลางอื่นกำหนด</p>
+          <p style="margin: 0 0 2px 100px;">[ &nbsp; ] (๔) ราคาที่ได้มาจากการสืบราคาจากท้องตลาด</p>
+          <p style="margin: 0 0 2px 100px;">[ &nbsp; ] (๕) ราคาที่เคยซื้อหรือจ้างครั้งหลังสุดภายในระยะเวลาสองปีงบประมาณ</p>
+          <p style="margin: 0 0 2px 100px;">[ &nbsp; ] (๖) วิธีอื่นใดตามหลักเกณฑ์ วิธีการ หรือแนวทางปฏิบัติของ กฟภ.</p>
+          <p style="text-indent: 5em; margin-bottom: 10px;">ในกรณีที่มีราคาตาม (๑) ให้ใช้ราคาตาม (๑) ก่อน ในกรณีที่ไม่มีราคาตาม (๑) แต่มีราคาตาม (๒) หรือ (๓) ให้ใช้ราคาตาม (๒) หรือ(๓) ก่อน โดยจะใช้ราคาใดตาม (๒) หรือ(๓) ให้คำนึงถึงประโยชน์ของหน่วยงานของรัฐเป็นสำคัญในกรณีที่ไม่มีราคาตามข้อ (๑) (๒) และ (๓) ให้ใช้ราคาตาม (๔) (๕) หรือ (๖) โดยจะใช้ราคาใดตาม (๔) (๕) หรือ (๖) ให้คำนึงถึงประโยชน์ของหน่วยงานของรัฐเป็นสำคัญ</p>
+
+          <p style="text-indent: 5em; margin: 0 0 2px 0;"><strong>๔. วงเงินที่จะซื้อโดยให้ระบุวงเงินงบประมาณ (รวมภาษีมูลค่าเพิ่ม)</strong></p>
+          <p style="text-indent: 5em; margin-bottom: 10px;">เป็นเงิน <span class="f1-grand-total-text"></span> บาท (<span class="f1-baht-text"></span>)</p>
+
+          <p style="text-indent: 5em; margin: 0 0 2px 0;"><strong>๕. กำหนดเวลาที่ต้องการใช้พัสดุนั้น หรือให้งานนั้นแล้วเสร็จ</strong></p>
+           <p style="margin: 0 0 2px 100px;">[ &nbsp; ] การจัดซื้อวัสดุ ครุภัณฑ์ ให้กำหนดวันส่งมอบพัสดุ ภายใน ๑๕ วัน นับถัดจากวันที่ลงนามในรายงานขออนุมัติจัดซื้อ</p>
+           <p style="margin: 0 0 2px 100px;">[ &nbsp; ] การจัดจ้าง กำหนดวันส่งมอบงาน ภายใน......วัน นับแต่วันถัดจากวันลงนามในสัญญา/ใบสั่ง</p>
+           <p style="margin: 0 0 2px 100px;">[ &nbsp; ] นับแต่วันถัดจากวันลงนามในสัญญา/ใบสั่ง</p>
+           <p style="margin: 0 0 10px 100px;">[ &nbsp; ] นับถัดจากวันที่ได้รับหนังสือแจ้งให้เริ่มทำงาน/ส่งมอบพื้นที่</p>
+
+          <p style="text-indent: 5em; margin: 0 0 2px 0;"><strong>๖. วิธีซื้อหรือจ้าง และเหตุผลที่จะต้องซื้อหรือจ้าง โดยวิธีเจาะจง</strong></p>
+          <p style="text-indent: 5em; margin-bottom: 10px; text-align: justify;">พิจารณาเห็นสมควรดำเนินการจัดซื้อจัดจ้างโดยวิธีเฉพาะเจาะจง ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. ๒๕๖0 ตามมาตรา ๕๖ (๒)(ข) เนื่องจากการจัดซื้อจัดจ้างครั้งนี้มีราคาไม่เกิน ๕๐๐,๐๐๐.๐๐ บาท และดำเนินการตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.๒๕๖๐ ข้อ ๗๙</p>
+
+          <p style="text-indent: 5em; margin: 0 0 2px 0;"><strong>๗. หลักเกณฑ์การพิจารณาการคัดเลือกข้อเสนอ</strong></p>
+          <p style="text-indent: 5em; margin-bottom: 10px;">โดยใช้เกณฑ์ราคา</p>
+
+          <p style="text-indent: 5em; margin: 0 0 2px 0;"><strong>๘. ข้อเสนออื่นๆ</strong></p>
+          <p style="text-indent: 5em; margin: 0 0 2px 0;">๘.๑ เห็นสมควรให้ <span class="f1-operator-text">นางสาวพรศิริ เมฆสวี หผ.สน.กฟส.ลส.</span> เป็นผู้ดำเนินการติดต่อตกลงราคากับผู้ประกอบการจำหน่ายโดยตรง</p>
+          <p style="text-indent: 5em; margin: 0 0 2px 0;">๘.๒ เห็นควรแต่งตั้งคณะกรรมการตรวจรับ ดังนี้</p>
+          <table style="width: 100%; border-collapse: collapse; margin-left: 5em; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; border: none;">
+          <tr style="border: none;">
+            <td style="border: none; padding: 2px 5px 2px 0; width: 220px; vertical-align: top;">๑) นายสุรศักดิ์ ยังปักษี</td>
+            <td style="border: none; padding: 2px 5px; width: 150px; vertical-align: top;">หผ.กส.กฟส.ลส.</td>
+            <td style="border: none; padding: 2px 5px; vertical-align: top;">ประธานกรรมการ</td>
+          </tr>
+          <tr style="border: none;">
+            <td style="border: none; padding: 2px 5px 2px 0; vertical-align: top;">๒) นางสาวดุจฤดี เนตรสุวรรณ์</td>
+            <td style="border: none; padding: 2px 5px; vertical-align: top;">ชผ.บร.กฟส.ลส.</td>
+            <td style="border: none; padding: 2px 5px; vertical-align: top;">กรรมการ</td>
+          </tr>
+          <tr style="border: none;">
+            <td style="border: none; padding: 2px 5px 2px 0; vertical-align: top;">๓) นายกลกิจ เลาอารีกิจ</td>
+            <td style="border: none; padding: 2px 5px; vertical-align: top;">ชผ.สน.กฟส.ลส.</td>
+            <td style="border: none; padding: 2px 5px; vertical-align: top;">กรรมการ</td>
+          </tr>
+          </table>
+          <p style="text-indent: 5em; margin: 0 0 10px 0;">ทั้งนี้เป็นอำนาจของ ผจก.กฟส.ลส. ตามคำสั่งมอบอำนาจอนุมัติจัดซื้อ จัดจ้าง จัดเช่า ที่ พ.(ม) ๒๘/๒๕๖๘ ลงวันที่ ๑๗ พฤศจิกายน ๒๕๖๘</p>
+
+          <p style="text-indent: 5em; margin: 0 0 2px 0;"><strong>จึงเรียนมาเพื่อโปรดพิจารณา ดังนี้</strong></p> 
+          <p style="margin: 0 0 2px 100px;" class="f1-comm-list1">๑. เห็นชอบในรายงานขอซื้อ/ขอจ้างดังกล่าวข้างต้น</p>
+          <p style="margin: 0 0 2px 100px;" class="f1-comm-list1">๒. เห็นชอบให้คณะกรรมการจัดซื้อ ตามข้อ ๘.๑ ลงนามในหนังสือถึงผู้ประกอบการจำหน่ายให้เข้ายื่นข้อเสนอ</p>
+          <p style="margin: 0 0 2px 100px;" class="f1-comm-list1">๓. อนุมัติแต่งตั้งคณะกรรมการตรวจรับ ตามข้อ ๘.๒</p>
+         
+          <div style="display: flex; justify-content: flex-start; margin-top: 80px;">
+            <div style="margin-left: 350px; text-align: center; margin-right: 50px;">
+              <p style="margin: 0;" class="f1-sign1-name">(นางสาวพรศิริ เมฆสวี)</p>
+              <p style="margin: 2px 0 0 0;" class="f1-sign1-pos">หผ.สน.กฟส.ลส.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+            <div style="width: 50%; border: 1px solid #000; padding: 6px;">
+              <p style="margin: 0 0 5px 0;">อนุมัติ</p>
+              <div style="text-align: center; margin-top: 30px;">
+                <p style="margin: 0;">(นายกิตติพงษ์ โสภาพงษ์)</p>
+                <p style="margin: 2px 0 0 0;">ผจก.กฟส.ลส.</p>
+                <p style="margin: 2px 0 0 0;"><span class="f1-date">..........................................</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+      
+<!-- ฟอร์มที่ 2: หนังสือแจ้งให้ยื่นใบเสนอราคา -->
+  <div id="over10kFormArea2" style="display: none;">
+    <div class="pea-document" style="max-width: 750px; margin: 0 auto; padding: 3.5cm 20px 10px 50px; color: #000; line-height: 1.25; font-size: 16pt;">
+      
+      <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; margin-bottom: 10px;">
+        <tr>
+          <td style="width: 45%; vertical-align: top; padding: 0;">
+            <strong>ที่</strong> มท ๕๓๐๗.๔๖/กฟส.ลส.<span class="f2-docno">๔๔๕๖๘</span>
+          </td>
+          <td style="width: 55%; vertical-align: top; padding: 0; text-align: right;">
+            <div style="display: inline-block; text-align: left;">
+              การไฟฟ้าส่วนภูมิภาคอำเภอหลังสวน<br>
+              ๒๐ ถนนประชาราษฎร์ ตำบลขันเงิน<br>
+              อำเภอหลังสวน จังหวัดชุมพร ๘๖๑๑๐
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <div style="text-align: center; margin-bottom: 10px;">
+        <span class="f2-date">๒๒ กันยายน ๒๕๖๙</span>
+      </div>
+
+      <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; margin-bottom: 10px;">
+        <tr>
+          <td style="width: 50px; vertical-align: top;"><strong>เรื่อง</strong></td>
+          <td>แจ้งให้ยื่นใบเสนอราคาวัสดุสำนักงานและวัสดุเบ็ดเตล็ด</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><strong>เรียน</strong></td>
+          <td><span class="f2-shop-name">ผู้จัดการ ร้านพัฒน์</span></td>
+        </tr>
+      </table>
+
+        <p style="text-indent: 5em; text-align: justify; text-justify: distribute; word-break: break-word; margin-bottom: 10px;">
+          ด้วยการไฟฟ้าส่วนภูมิภาคสาขาหลังสวน มีความประสงค์จะจัดซื้อวัสดุสำนักงานและวัสดุเบ็ดเตล็ดของสำนักงาน กฟส.หลังสวนและ กฟส.ในสังกัด โดยวิธีเฉพาะเจาะจง และกำหนดส่งมอบงานภายใน ๑๕ วัน ตามรายละเอียดดังนี้
+        </p>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif;">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 35px;">ที่</th>
+              <th style="border: 1px solid #000; padding: 4px; text-align: center;">รายการพัสดุ</th>
+              <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 90px;">จำนวน</th>
+              <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 90px;">หน่วย</th>
+            </tr>
+          </thead>
+          <tbody class="f2-table-body"></tbody>
+        </table>
+
+        <p style="text-indent: 5em; text-align: justify; text-justify: distribute; word-break: break-word; margin-bottom: 10px;">
+          การไฟฟ้าส่วนภูมิภาคสาขาหลังสวน ได้พิจารณาแล้วเห็นว่าท่านเป็นผู้ประกอบการที่มีคุณสมบัติสามารถดำเนินการจัดหาวัสดุสำนักงานและวัสดุเบ็ดเตล็ด ดังกล่าว ได้ตามระยะเวลาที่กำหนด จึงขอให้ท่านเสนอราคาภายใน ๓ วัน หากพ้นจากกำหนดเวลาดังกล่าว จะถือว่าท่านไม่ประสงค์จะเสนอราคา
+        </p>
+        
+        <p style="text-indent: 5em; margin: 0 0 50px 0;">จึงเรียนมาเพื่อทราบและดำเนินการต่อไป</p>
+
+        <div style="text-align: center; margin-left: 50%;">
+          <p style="margin: 0;" class="f2-sign-name">(นายกิตติพงษ์ โสภาพงษ์)</p>
+          <p style="margin: 2px 0 0 0; white-space: pre-line;" class="f2-sign-pos">ผู้จัดการ การไฟฟ้าส่วนภูมิภาคสาขาหลังสวน</p>
+        </div>
+      </div>
+  </div>
+
+  <!-- ฟอร์มที่ 3: บันทึกผลการพิจารณาและขออนุมัติฯ (ฉบับแก้ไขเลย์เอาต์เสถียร 1 หน้าเป๊ะ) -->
+  <div id="over10kFormArea3" style="display: none;">
+    <div class="pea-document" style="max-width: 750px; margin: 0 auto; padding: 10px 20px; color: #000; line-height: 1.2; font-size: 16pt; background: #fff;">
+      <div style="text-align: center; font-size: 13pt; margin-bottom: 2px;">- ๑ -</div>
+      <div style="margin-bottom: 8px; text-align: left;"><img src="logo.jpg" style="width: 3.5cm; height: 2.6cm;" alt="PEA Logo"></div>
+      
+      <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; margin-bottom: 3px;">
+        <tr>
+          <td style="width: 50%;"><strong style="display: inline-block; width: 45px;">จาก</strong> ผสน.กฟส.ลส.</td>
+          <td style="width: 50%;"><strong style="display: inline-block; width: 45px;">ถึง</strong> ผจก.กฟส.ลส.</td>
+        </tr>
+        <tr>
+          <td><strong style="display: inline-block; width: 45px;">เลขที่</strong> ต.๑ กฟส.ลส.(สน)</td>
+          <td><strong style="display: inline-block; width: 45px;">วันที่</strong> <span class="f3-date">๒๕ กันยายน ๒๕๖๙</span></td>
+        </tr>
+      </table>
+
+      <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; margin-bottom: 3px;">
+        <tr>
+          <td style="width: 45px; vertical-align: top;"><strong>เรื่อง</strong></td>
+          <td style="vertical-align: top; text-align: justify; padding-left: 5px;">ผลการพิจารณาและขออนุมัติจัดซื้อวัสดุสำนักงานและวัสดุเบ็ดเตล็ดของสำนักงาน กฟส.หลังสวนและ กฟส.ในสังกัด โดยวิธีเจาะจง</td>
+        </tr>
+      </table>
+      
+      <p style="margin: 3px 0 6px 0;"><strong style="display: inline-block; width: 45px;">เรียน</strong> ผจก.กฟส.ลส. ผ่าน ชจก.(ล) กฟส.ลส.</p>
+      
+      <p style="margin: 0 0 2px 0;"><strong>๑. เรื่องเดิม</strong></p>
+      <p style="text-indent: 2.5em; margin: 0 0 2px 0;">๑.๑ ตามอนุมัติ ผจก.กฟส.ลส. ลงวันที่ <span class="f3-report-date">๒๑ กันยายน ๒๕๖๙</span> เรื่องรายงานขอซื้อวัสดุสำนักงานและวัสดุเบ็ดเตล็ด</p>
+      <p style="text-indent: 2.5em; margin: 0 0 5px 0;">๑.๒ กฟส.ลส. ได้ทำหนังสือเชิญชวนให้เสนอราคา เลขที่ มท ๕๓๐๗.๔๖/กฟส.ลส.<span class="f3-invite-no">๔๔๕๖๘</span> ลงวันที่ <span class="f3-invite-date">๒๒ กันยายน ๒๕๖๙</span></p>
+
+      <p style="margin: 0 0 2px 0;"><strong>๒. ข้อเท็จจริง</strong></p>
+      <p style="text-indent: 2.5em; text-align: justify; margin-bottom: 4px;">
+        ๒.๑ <span class="f3-shop-name">ร้านพัฒน์</span> ได้เสนอราคาวัสดุสำนักงานและวัสดุเบ็ดเตล็ดในสำนักงานตามใบเสนอราคาลงรับเลขที่ <span class="f3-quotation-no">๘๙٠๓/๒๕๖๙</span> ลงวันที่ <span class="f3-quotation-date">๒๕ กันยายน ๒๕๖๙</span> เป็นจำนวนเงินทั้งสิ้น <span class="f3-total-amount">๑๗,๖๑๕.-</span> บาท (<span class="f3-baht-text"></span>) รวมภาษีมูลค่าเพิ่ม โดยผู้เสนอราคามีคุณสมบัติตรงตามข้อกำหนด
+      </p>
+      <p style="text-indent: 2.5em; text-align: justify; margin-bottom: 5px;">
+        ๒.๒ ผสน.กฟส.ลส. ได้ต่อรองราคากับผู้เสนอราคาด้วยวาจา เมื่อวันที่ <span class="f3-quotation-date">๒๕ กันยายน ๒๕๖๙</span> โดยผู้เสนอราคายืนยันใช้ราคาเดิม ตามข้อ ๒.๑
+      </p>
+
+      <p style="margin: 0 0 2px 0;"><strong>๓. ข้อพิจารณา</strong></p>
+      <p style="text-indent: 2.5em; text-align: justify; margin-bottom: 10px;">
+        จากรายละเอียดดังกล่าวข้างต้น ผสน.กฟส.ลส. พิจารณาแล้วเห็นควรดำเนินการจัดซื้อวัสดุสำนักงานและวัสดุเบ็ดเตล็ดในสำนักงานโดยวิธีเจาะจง จาก <span class="f3-shop-name">ร้านพัฒน์</span> หมายเลขผู้ขาย <span class="f3-vendor-no">๒๐๘๘๓๓</span> และมีกำหนดส่งมอบพัสดุภายใน ๑๕ วัน นับถัดจากวันที่ลงนามในรายงานขออนุมัติจัดซื้อ
+      </p>
+
+      <p style="margin-bottom: 15px;">จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ</p>
+
+      <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif;">
+        <tr>
+          <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+            <div style="border: 1px solid #000; padding: 6px; min-height: 110px;">
+              <p style="margin: 0 0 3px 0;">เรียน หผ.สน.</p>
+              <p style="margin: 0 0 10px 0;">อนุมัติ - ดำเนินการต่อไป</p>
+              <div style="text-align: center;">
+                <p style="margin: 0;">(นายกรัณย์ จุริยสุทธิศิริ)</p>
+                <p style="margin: 2px 0 0 0;">ชจก.(ท) รักษาการแทน ผจก.กฟส.ลส.</p>
+                <p style="margin: 2px 0 0 0;"><span class="f3-date">๒๕ กันยายน ๒๕๖๙</span></p>
+              </div>
+            </div>
+          </td>
+          <td style="width: 50%; vertical-align: bottom; text-align: center; padding-left: 15px;">
+            <p style="margin: 0;" class="f3-operator-name">(นางสาวพรศิริ เมฆสวี)</p>
+            <p style="margin: 2px 0 0 0;">หผ.สน.กฟส.ลส.</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ฟอร์มที่ 4: บันทึกผลการตรวจรับงานจัดซื้อ (ฉบับแก้ไขเลย์เอาต์เสถียร 1 หน้าเป๊ะ) -->
+  <div id="over10kFormArea4" style="display: none;">
+    <div class="pea-document" style="max-width: 750px; margin: 0 auto; padding: 10px 20px; color: #000; line-height: 1.2; font-size: 16pt; background: #fff;">
+      <div style="text-align: center; font-size: 13pt; margin-bottom: 2px;">- ๑ -</div>
+      <div style="margin-bottom: 8px; text-align: left;"><img src="logo.jpg" style="width: 3.5cm; height: 2.6cm;" alt="PEA Logo"></div>
+      
+      <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; margin-bottom: 3px;">
+        <tr>
+          <td style="width: 50%;"><strong style="display: inline-block; width: 45px;">จาก</strong> คณะกรรมการตรวจรับงาน</td>
+          <td style="width: 50%;"><strong style="display: inline-block; width: 45px;">ถึง</strong> ผจก.กฟส.ลส.</td>
+        </tr>
+        <tr>
+          <td><strong style="display: inline-block; width: 45px;">เลขที่</strong> ต.๑กฟส.ลส.(สน)</td>
+          <td><strong style="display: inline-block; width: 45px;">วันที่</strong> <span class="f4-date">๒ ตุลาคม ๒๕๖๙</span></td>
+        </tr>
+      </table>
+
+      <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; margin-bottom: 3px;">
+        <tr>
+          <td style="width: 45px; vertical-align: top;"><strong>เรื่อง</strong></td>
+          <td style="vertical-align: top; text-align: justify; padding-left: 5px;">ผลการตรวจรับงานจัดซื้อวัสดุสำนักงานและวัสดุเบ็ดเตล็ดของสำนักงาน กฟส.หลังสวนและ กฟส.ในสังกัด</td>
+        </tr>
+      </table>
+      
+      <p style="margin: 3px 0 6px 0;"><strong style="display: inline-block; width: 45px;">เรียน</strong> ผจก.กฟส.ลส. ผ่าน ชจก.(ล) กฟส.ลส.</p>
+      
+      <p style="margin: 0 0 2px 0;"><strong>๑. เรื่องเดิม</strong></p>
+      <p style="text-indent: 2.5em; margin: 0 0 2px 0;">๑.๑ ตามอนุมัติ ผจก.กฟส.ลส. ลงวันที่ <span class="f4-approval-date">๒๕ กันยายน ๒๕๖๙</span> เรื่อง ผลการพิจารณาและขออนุมัติจัดซื้อวัสดุสำนักงานและวัสดุเบ็ดเตล็ด โดยวิธีเจาะจง</p>
+      <p style="text-indent: 2.5em; margin: 0 0 5px 0;">๑.๒ ตามใบส่งมอบของลงรับเลขที่ <span class="f4-delivery-no">๙๐๒ผ/๒๕๖๙</span> ลงวันที่ <span class="f4-delivery-date">๓๐ กันยายน ๒๕๖๙</span></p>
+
+      <p style="margin: 0 0 2px 0;"><strong>๒. ข้อเท็จจริง</strong></p>
+      <p style="text-indent: 2.5em; text-align: justify; margin-bottom: 4px;">
+        ๒.๑ คณะกรรมการตรวจได้ตรวจรับงานจัดซื้อดังกล่าวเสร็จเรียบร้อยตามเงื่อนไขการซื้อทุกประการเมื่อวันที่ <span class="f4-date">๒ ตุลาคม ๒๕๖๙</span> ผลปรากฏว่า <span class="f4-shop-name">ร้านพัฒน์</span> ได้ส่งมอบพัสดุครบถ้วนตามข้อตกลงการซื้อ
+      </p>
+      <p style="text-indent: 2.5em; text-align: justify; margin-bottom: 5px;">
+        ๒.๒ ตามคำสั่ง กฟภ. ที่ พ.(ม) ๒๘/๒๕๖๘ ลงวันที่ ๑๗ พฤศจิกายน ๒๕๖๘ ข้อ ๑ ข้อ่อย ๑.๒ (๑) ให้ ผจก.กฟส. ระดับ ๑๑ มีอำนาจในการสั่งจ่ายเงินครั้งหนึ่งมีวงเงินไม่เกิน ๒,๐๐๐,๐00 บาท
+      </p>
+
+      <p style="margin: 0 0 2px 0;"><strong>๓. ข้อพิจารณา</strong></p>
+      <p style="text-indent: 2.5em; text-align: justify; margin-bottom: 4px;">
+        คณะกรรมการตรวจรับงาน พิจารณาแล้วเห็นว่า <span class="f4-shop-name">ร้านพัฒน์</span> ได้ส่งมอบพัสดุ ให้กับ กฟส.ลส. เสร็จเรียบร้อยแล้วถูกต้องตามเงื่อนไขทุกประการ จึงเห็นควรดำเนินการดังต่อไปนี้
+      </p>
+      <p style="text-indent: 2.5em; margin: 0 0 2px 0;">๓.๑ รับมอบงาน ตามข้อ ๒.๑</p>
+      <p style="text-indent: 2.5em; margin: 0 0 8px 0;">๓.๒ ขออนุมัติเบิกจ่ายเงิน ตามข้อ ๑.๒ ให้กับ <span class="f4-shop-name">ร้านพัฒน์</span> เป็นจำนวนเงิน <span class="f4-total-amount">๑๗,๖๑๕.-</span> บาท (<span class="f4-baht-text"></span>), รวมภาษีมูลค่าเพิ่ม</p>
+
+      <p style="margin-bottom: 15px;">จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ</p>
+
+      <!-- ลายเซ็นคณะกรรมการตรวจรับ 3 คน -->
+      <table style="width: 100%; border: none; border-collapse: collapse; font-size: 16pt; font-family: 'TH Sarabun PSK', sans-serif; margin-bottom: 10px;">
+        <tr>
+          <td style="width: 50%; text-align: center; padding-bottom: 8px;">
+            <p style="margin: 0;">ลงชื่อ..................................................ประธานกรรมการตรวจรับ</p>
+            <p style="margin: 2px 0 0 0;" class="f4-comm1">(นายสุรศักดิ์ ยังปักษี) หผ.กส.กฟส.ลส.</p>
+          </td>
+          <td style="width: 50%; text-align: center; padding-bottom: 8px;">
+            <p style="margin: 0;">ลงชื่อ..................................................กรรมการตรวจรับ</p>
+            <p style="margin: 2px 0 0 0;" class="f4-comm2">(นางสาวดุจฤดี เนตรสุวรรณ์) ชผ.บร.กฟส.ลส.</p>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="text-align: center;">
+            <p style="margin: 0;">ลงชื่อ..................................................กรรมการตรวจรับ</p>
+            <p style="margin: 2px 0 0 0;" class="f4-comm3">(นายกลกิจ เลาอารีกิจ) ซผ.สน.กฟส.ลส.</p>
+          </td>
+        </tr>
+      </table>
+
+      <!-- กรอบอนุมัติ -->
+      <div style="border: 1px solid #000; padding: 6px;">
+        <p style="margin: 0 0 2px 0;">อนุมัติและลงนามแล้ว</p>
+        <div style="text-align: center; margin-top: 8px;">
+          <p style="margin: 0;">(นายกิตติพงษ์ โสภาพงษ์)</p>
+          <p style="margin: 2px 0 0 0;">ผจก.กฟส.ลส.</p>
+          <p style="margin: 2px 0 0 0;"><span class="f4-date">๒ ตุลาคม ๒๕๖๙</span></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  
+  <!-- ป็อปอัพตรวจสอบรายการก่อนยืนยันส่งข้อมูล -->

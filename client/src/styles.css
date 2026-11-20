@@ -1,0 +1,88 @@
+@font-face {
+      font-family: 'TH Sarabun PSK';
+      src: local('TH Sarabun PSK'), local('THSarabunPSK');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'TH Sarabun PSK';
+      src: local('TH Sarabun PSK Bold'), local('THSarabunPSK-Bold');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    body { font-family: 'Sarabun', sans-serif; }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    .pea-document {
+      font-family: 'TH Sarabun PSK', 'TH SarabunIT๙', 'Sarabun', sans-serif !important;
+      font-size: 16pt !important;
+    }
+
+    @page {
+      size: A4;
+      margin: 15mm;
+    }
+
+    /* CSS Print: ซ่อนส่วนที่ไม่ต้องการพิมพ์ */
+    @media print {
+      header, nav, main, .no-print, #adminModal, #compareModal, #wizardModal, #previewModal, #loadingOverlay, #systemClosedBanner {
+        display: none !important;
+      }
+
+      #printArea, #peaFormArea, #over10kFormArea1, #over10kFormArea2, #over10kFormArea3, #over10kFormArea4 {
+        display: none !important;
+      }
+
+      body.printing-summary #printArea { display: block !important; }
+      body.printing-pea #peaFormArea { display: block !important; }
+      body.printing-over10k-1 #over10kFormArea1 { display: block !important; }
+      body.printing-over10k-2 #over10kFormArea2 { display: block !important; }
+      body.printing-over10k-3 #over10kFormArea3 { display: block !important; }
+      body.printing-over10k-4 #over10kFormArea4 { display: block !important; }
+      @media print {
+      header, nav, main, .no-print, #adminModal, #compareModal, #wizardModal, #previewModal, #loadingOverlay, #systemClosedBanner {
+        display: none !important;
+      }
+
+      #printArea, #peaFormArea, #over10kFormArea1, #over10kFormArea2, #over10kFormArea3, #over10kFormArea4 {
+        display: none !important;
+      }
+
+      body.printing-summary #printArea { display: block !important; }
+      body.printing-pea #peaFormArea { display: block !important; }
+      body.printing-over10k-1 #over10kFormArea1 { display: block !important; }
+      body.printing-over10k-2 #over10kFormArea2 { display: block !important; }
+      body.printing-over10k-3 #over10kFormArea3 { display: block !important; }
+      body.printing-over10k-4 #over10kFormArea4 { display: block !important; }
+
+      /* === โค้ดใหม่ที่เพิ่มเข้ามา === */
+      table { page-break-inside: auto; }
+      tr { page-break-inside: avoid; page-break-after: auto; }
+      thead { display: table-header-group; }
+      tfoot { display: table-footer-group; }
+    }
+
+@page { size: A4; margin: 15mm; } body { font-family: 'TH Sarabun PSK', sans-serif; font-size: 16pt; }
+
+              @font-face {
+                font-family: 'TH Sarabun PSK';
+                src: local('TH Sarabun PSK'), local('THSarabunPSK');
+                font-weight: normal;
+                font-style: normal;
+              }
+              body {
+                font-family: 'TH Sarabun PSK', sans-serif;
+                font-size: 16pt;
+                color: #000;
+                line-height: 1.2;
+                margin: 0;
+                padding: 10mm 15mm;
+                background: #fff;
+              }
+              @page { size: A4; margin: 15mm; }
+              img { max-width: 100%; height: auto; }
+
+html,body{min-height:100%;} app-root{display:block;}

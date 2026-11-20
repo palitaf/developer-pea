@@ -1,0 +1,70 @@
+# Migration inventory
+
+Source: `index (1).html` supplied in this conversation.
+
+- Original body markup copied into `client/src/app/pages/workspace/legacy-workspace.component.html` (all legacy dialogs, print templates, document layouts retained).
+- Original inline script moved to `client/src/app/core/legacy-workflow.service.ts`.
+- 59 top-level legacy function entry points are exposed to the preserved inline event handlers.
+- Google Apps Script endpoint moved from browser to `GAS_WEB_APP_URL` on backend.
+- Login and role management are added as Angular pages/services and Express endpoints.
+
+Legacy function names retained:
+- `showLoading`
+- `hideLoading`
+- `setAutoCurrentMonth`
+- `fetchMasterItems`
+- `renderItems`
+- `filterItems`
+- `updateQty`
+- `handleDirectInput`
+- `calculateTotals`
+- `submitOrder`
+- `closeConfirmOrderModal`
+- `renderConfirmOrderModal`
+- `removeItemFromConfirmModal`
+- `confirmAndSendOrder`
+- `toggleSystemStatus`
+- `switchAdminTab`
+- `fetchAdminOrders`
+- `openAdminCheckModal`
+- `toggleAdminModal`
+- `promptComparePassword`
+- `closePasswordModal`
+- `verifyComparePassword`
+- `populateMonthFilterOptions`
+- `filterAdminOrders`
+- `renderAdminTable`
+- `toggleSelectAllRows`
+- `updateDeleteButtonUI`
+- `deleteSelectedOrders`
+- `deleteOrder`
+- `addNewItemToSheet`
+- `getNextAutoItemId`
+- `autoFillNextItemId`
+- `printSummaryReport`
+- `openCompareModal`
+- `closeCompareModal`
+- `buildCompareList`
+- `renderCompareTable`
+- `handleItemSelect`
+- `toggleSelectAllCompare`
+- `handleMatchChange`
+- `handleReceivedQtyInput`
+- `handleUnitPriceInput`
+- `updateItemTotal`
+- `calculateCompareTotals`
+- `ArabicToThaiBaht`
+- `readNumber`
+- `toThaiDigits`
+- `smartConvertToThaiDigits`
+- `preparePeaReportData`
+- `generatePeaReport`
+- `downloadWordReport`
+- `openWizardModal`
+- `closeWizardModal`
+- `goToStep`
+- `changeStep`
+- `prepareOver10kWizardData`
+- `previewCurrentStepForm`
+- `closePreviewModal`
+- `printFromPreview`

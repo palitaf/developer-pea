@@ -1,0 +1,566 @@
+
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-all">
+    <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 max-w-xs w-full mx-4">
+      <div class="w-12 h-12 rounded-full border-4 border-purple-200 animate-spin border-t-purple-700"></div>
+      <p id="loadingText" class="text-sm font-semibold text-slate-700 text-center">กำลังประมวลผล กรุณารอสักครู่...</p>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="bg-gradient-to-r from-purple-800 to-indigo-900 text-white shadow-lg sticky top-0 z-40 no-print">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+          <i class="fa-solid fa-boxes-packing text-2xl text-amber-300"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-wide">ระบบสั่งซื้อพัสดุ / วัสดุสำนักงาน</h1>
+          <p class="text-xs text-purple-200">กฟส.หลังสวน และหน่วยงานในสังกัด</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 no-print">
+        <a href="#order-form" class="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold rounded-lg text-sm transition shadow">
+          <i class="fa-solid fa-cart-plus mr-1"></i> กรอกความต้องการ
+        </a>
+        <button id="adminOpenButton" onclick="openAdminCheckModal()" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm border border-white/20 transition">
+          <i class="fa-solid fa-list-check mr-1"></i> ดูข้อมูลการสั่งซื้อ
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="systemClosedBanner" class="hidden bg-rose-600 text-white text-center py-3 font-semibold shadow-md no-print">
+    <i class="fa-solid fa-ban mr-2"></i> ขณะนี้ระบบปิดรับความต้องการสั่งซื้อวัสดุชั่วคราว
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 no-print">
+    <!-- Admin Orders Modal (เปิดดูได้ทันทีไม่ต้องใส่รหัสผ่าน) -->
+    <div id="adminModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="p-4 bg-slate-800 text-white flex justify-between items-center">
+          <h2 class="font-bold text-lg"><i class="fa-solid fa-clipboard-list mr-2"></i>ข้อมูลการสั่งซื้อพัสดุทั้งหมด</h2>
+          <button onclick="toggleAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+
+        <div id="adminPanel" class="flex-1 overflow-y-auto p-6 space-y-6">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
+            <div class="flex space-x-2">
+              <button onclick="switchAdminTab('orders')" id="tabOrdersBtn" class="px-4 py-2 rounded-lg font-medium text-sm bg-purple-100 text-purple-800">รายงานสั่งซื้อ</button>
+              <button onclick="switchAdminTab('addItem')" id="tabAddItemBtn" class="px-4 py-2 rounded-lg font-medium text-sm text-slate-600 hover:bg-slate-100">เพิ่มรายการพัสดุใหม่</button>
+            </div>
+            <div class="flex items-center gap-3 bg-slate-100 px-4 py-2 rounded-xl border">
+              <span class="text-xs font-bold text-slate-700">สถานะเปิดรับรายการ:</span>
+              <button id="toggleSystemBtn" onclick="toggleSystemStatus()" class="px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-lg transition">
+                <i class="fa-solid fa-toggle-on mr-1"></i> เปิดรับรายการ
+              </button>
+            </div>
+          </div>
+
+          <!-- Orders Report Tab -->
+          <div id="adminOrdersTab" class="space-y-4">
+            <div class="flex flex-col lg:flex-row justify-between items-center gap-3 bg-slate-50 p-3 rounded-xl border">
+              <div class="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
+                <div class="flex items-center space-x-2 w-full sm:w-auto">
+                  <label class="text-xs font-bold text-slate-600 whitespace-nowrap"><i class="fa-solid fa-filter mr-1"></i>แผนก:</label>
+                  <select id="adminDeptFilter" onchange="filterAdminOrders()" class="p-2 border rounded-lg text-xs bg-white focus:ring-2 focus:ring-purple-600 outline-none w-full sm:w-60">
+                    <option value="ALL">-- แสดงทุกแผนก --</option>
+                    <option value="แผนกสนับสนุน (ผสน.) และ กฟส.xs">แผนกสนับสนุน (ผสน.) และ กฟส.xs</option>
+                    <option value="แผนกบริการและลูกค้าสัมพันธ์ (ผบส.)">แผนกบริการและลูกค้าสัมพันธ์ (ผบส.)</option>
+                    <option value="แผนกบริหารรายได้ค่าไฟ (ผบร.)">แผนกบริหารรายได้ค่าไฟ (ผบร.)</option>
+                    <option value="แผนกก่อสร้างระบบไฟฟ้า (ผกส.)">แผนกก่อสร้างระบบไฟฟ้า (ผกส.)</option>
+                    <option value="แผนกมิเตอร์และหม้อแปลง (ผมต.)">แผนกมิเตอร์และหม้อแปลง (ผมต.)</option>
+                    <option value="แผนกปฏิบัติการและบำรุงรักษาระบบไฟฟ้า (ผปบ.)">แผนกปฏิบัติการและบำรุงรักษาระบบไฟฟ้า (ผปบ.)</option>
+                  </select>
+                </div>
+
+                <div class="flex items-center space-x-2 w-full sm:w-auto">
+                  <label class="text-xs font-bold text-slate-600 whitespace-nowrap"><i class="fa-solid fa-calendar-days mr-1"></i>รอบเดือน:</label>
+                  <select id="adminMonthFilter" onchange="filterAdminOrders()" class="p-2 border rounded-lg text-xs bg-white focus:ring-2 focus:ring-purple-600 outline-none w-full sm:w-56">
+                    <option value="ALL">-- แสดงทุกรอบเดือน --</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <button id="deleteSelectedBtn" onclick="deleteSelectedOrders()" class="hidden px-3 py-1.5 bg-rose-600 text-white text-xs rounded-lg hover:bg-rose-700 font-medium transition shadow-sm">
+                  <i class="fa-solid fa-trash-can mr-1"></i> ลบที่เลือก (<span id="selectedDeleteCount">0</span>)
+                </button>
+                <button id="printSummaryButton" onclick="printSummaryReport()" class="px-3 py-1.5 bg-slate-700 text-white text-xs rounded-lg hover:bg-slate-800 font-medium transition shadow-sm">
+                  <i class="fa-solid fa-print mr-1"></i> พิมพ์รายงานส่งร้าน
+                </button>
+                <!-- ปุ่มตรวจรับถูกป้องกันด้วยรหัสผ่าน -->
+                <button id="compareOpenButton" onclick="promptComparePassword()" class="px-3 py-1.5 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700 font-medium transition shadow-sm">
+                  <i class="fa-solid fa-scale-balanced mr-1"></i> ตรวจรับ & ใบวางบิล
+                </button>
+              </div>
+            </div>
+
+            <!-- ตารางแสดงข้อมูลการสั่งซื้อแบบ 8 คอลัมน์ปกติ (ไม่มี Checkbox) -->
+            <div class="overflow-x-auto border rounded-xl">
+              <table class="w-full text-sm text-left text-slate-600">
+                <thead class="text-xs uppercase bg-slate-100 text-slate-700">
+                  <tr>
+                    <th class="p-3 text-center w-10">
+                      <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAllRows(this.checked)" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 cursor-pointer">
+                    </th>
+                    <th class="p-3">วัน-เวลา</th>
+                    <th class="p-3">แผนก/งาน</th>
+                    <th class="p-3">รอบเดือน</th>
+                    <th class="p-3">รายการพัสดุ</th>
+                    <th class="p-3 text-center">จำนวน</th>
+                    <th class="p-3 text-center">หน่วยนับ</th>
+                    <th class="p-3 text-center">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="adminOrdersTable">
+                  <tr><td colspan="8" class="text-center py-4 text-slate-400">กำลังโหลดข้อมูล...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Add Item Tab -->
+          <div id="adminAddItemTab" class="hidden max-w-lg mx-auto bg-slate-50 p-6 rounded-xl border space-y-4">
+            <h4 class="font-bold text-slate-800">เพิ่มวัสดุใหม่ลง MasterItems</h4>
+            <div>
+              <label class="block text-xs font-semibold mb-1">รหัสพัสดุ (ID)</label>
+              <input type="text" id="newItemId" placeholder="เช่น 80 หรือ OFF-080" class="w-full p-2 border rounded-lg text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1">ชื่อรายการวัสดุ</label>
+              <input type="text" id="newItemName" placeholder="เช่น กระดาษ A4 80 แกรม" class="w-full p-2 border rounded-lg text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1">หน่วยนับ</label>
+              <input type="text" id="newItemUnit" placeholder="เช่น กล่อง, เล่ม, อัน" class="w-full p-2 border rounded-lg text-sm">
+            </div>
+            <button onclick="addNewItemToSheet()" class="w-full py-2 bg-emerald-600 text-white font-medium rounded-lg text-sm hover:bg-emerald-700">
+              <i class="fa-solid fa-plus mr-1"></i> บันทึกรายการใหม่
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Prompt Modal สำหรับปุ่ม ตรวจรับ & ใบวางบิล -->
+    <div id="passwordModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4">
+        <div class="w-12 h-12 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center mx-auto text-xl">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 class="font-bold text-slate-800 text-base">กรุณาใส่รหัสผ่านผู้ดูแลระบบ</h3>
+        <p class="text-xs text-slate-500">เพื่อเข้าสู่เมนูตรวจรับพัสดุและจัดทำใบวางบิล</p>
+        <input type="password" id="comparePasswordInput" placeholder="รหัสผ่าน" class="w-full px-4 py-2 border rounded-xl text-center focus:ring-2 focus:ring-purple-600 outline-none text-sm">
+        <div class="flex gap-2 pt-2">
+          <button onclick="closePasswordModal()" class="w-1/2 py-2 bg-slate-200 text-slate-700 rounded-xl font-medium text-xs hover:bg-slate-300">ยกเลิก</button>
+          <button onclick="verifyComparePassword()" class="w-1/2 py-2 bg-purple-700 text-white rounded-xl font-medium text-xs hover:bg-purple-800">ยืนยัน</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL ตรวจรับพัสดุ & เปรียบเทียบใบวางบิล (<= 10,000 บาท) มี Checkbox เลือกเฉพาะรายการ -->
+    <div id="compareModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="p-4 bg-indigo-900 text-white flex justify-between items-center">
+          <h2 class="font-bold text-base md:text-lg flex items-center">
+            <i class="fa-solid fa-file-invoice-dollar mr-2 text-amber-300"></i> ตรวจรับพัสดุ & เปรียบเทียบใบวางบิล
+          </h2>
+          <button onclick="closeCompareModal()" class="text-slate-300 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+
+        <div class="p-4 bg-slate-50 border-b grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">เลขที่หนังสือ (ถ้ามี):</label>
+            <input type="text" id="docNoInput" placeholder="เว้นว่างไว้ได้" class="w-full p-2 border rounded bg-white">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">วันที่ออกหนังสือ (ถ้ามี):</label>
+            <input type="text" id="docDateText" placeholder="เช่น ๑๗ สิงหาคม ๒๕๖๙ (เว้นว่างไว้ได้)" class="w-full p-2 border rounded bg-white">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">ใบเสร็จ/ใบส่งของ (เล่ม/เลขที่/ลงวันที่):</label>
+            <input type="text" id="billDocInfo" placeholder="เช่น ใบเสร็จเล่มที่ ๓๕ เลขที่ ๓ ลงวันที่ ๑๗ ส.ค. ๖๙" class="w-full p-2 border rounded bg-white">
+          </div>
+        </div>
+
+        <!-- ช่องกรอกรหัสบัญชีและศูนย์ต้นทุน -->
+        <div class="p-4 bg-blue-50 border-b grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div>
+            <label class="font-bold text-blue-900 block mb-1"><i class="fa-solid fa-book-bookmark mr-1"></i>รหัสบัญชี:</label>
+            <input type="text" id="inputAccountCode" placeholder="เช่น 53030010 หรือ ๑-๕: 53030020, ๖-๑๗: 53002002" class="w-full p-1.5 border rounded bg-white font-medium">
+          </div>
+          <div>
+            <label class="font-bold text-blue-900 block mb-1"><i class="fa-solid fa-building-columns mr-1"></i>ศูนย์ต้นทุน (งบทำการ):</label>
+            <input type="text" id="inputCostCenter" placeholder="เช่น J31310170 หรือ J๓๑๓๑01๗0" class="w-full p-1.5 border rounded bg-white font-medium">
+          </div>
+        </div>
+
+        <!-- ช่องกรอกข้อมูลผู้ลงนามทั้ง 3 กรอบ -->
+        <div class="p-4 bg-purple-50 border-b grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="font-bold text-purple-900 block mb-1"><i class="fa-solid fa-user-pen mr-1"></i>1. ผู้ดำเนินการ:</label>
+            <input type="text" id="inputSignName1" placeholder="เช่น นายไฟฟ้า แรงสูง" class="w-full p-1.5 border rounded bg-white mb-1">
+            <input type="text" id="inputSignPos1" placeholder="เช่น พบช.ผสน.กฟส.ลส." class="w-full p-1.5 border rounded bg-white">
+          </div>
+          <div>
+            <label class="font-bold text-purple-900 block mb-1"><i class="fa-solid fa-user-pen mr-1"></i>2. ผู้บังคับบัญชาชั้นต้น:</label>
+            <input type="text" id="inputSignName2" placeholder="เช่น นางสาวปลอดภัย หายห่วง" class="w-full p-1.5 border rounded bg-white mb-1">
+            <input type="text" id="inputSignPos2" placeholder="เช่น หน.ผสน.กฟส.ลส." class="w-full p-1.5 border rounded bg-white">
+          </div>
+          <div>
+            <label class="font-bold text-purple-900 block mb-1"><i class="fa-solid fa-user-pen mr-1"></i>3. หัวหน้าหน่วยงาน:</label>
+            <input type="text" id="inputSignName3" placeholder="เช่น นายกิจการ รุ่งเรือง" class="w-full p-1.5 border rounded bg-white mb-1">
+            <input type="text" id="inputSignPos3" placeholder="เช่น ผจก.กฟส.ลส." class="w-full p-1.5 border rounded bg-white">
+          </div>
+        </div>
+
+        <div class="px-4 py-2 bg-slate-100 border-b flex justify-between items-center text-xs">
+          <div class="font-bold text-slate-700">รูปแบบภาษีมูลค่าเพิ่ม:</div>
+          <select id="vatTypeSelect" onchange="calculateCompareTotals()" class="p-1.5 border rounded bg-white font-medium">
+            <option value="included">รวมภาษีมูลค่าเพิ่ม (VAT Included)</option>
+            <option value="excluded">ไม่รวมภาษีมูลค่าเพิ่ม (VAT Excluded)</option>
+          </select>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4">
+          <table class="w-full text-xs text-left text-slate-600 border border-collapse">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
+              <tr>
+                <th class="p-2 border text-center w-12">
+                  <input type="checkbox" id="selectAllCompare" checked onchange="toggleSelectAllCompare(this.checked)" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 cursor-pointer" title="เลือกทั้งหมด">
+                </th>
+                <th class="p-2 border text-center w-12">ลำดับ</th>
+                <th class="p-2 border">รายการพัสดุ</th>
+                <th class="p-2 border text-center">สั่งซื้อ</th>
+                <th class="p-2 border text-center">สถานะตรวจรับ</th>
+                <th class="p-2 border text-center w-20">รับจริง</th>
+                <th class="p-2 border text-center">หน่วย</th>
+                <th class="p-2 border text-center w-28">ราคา/หน่วย (บาท)</th>
+                <th class="p-2 border text-right w-28">จำนวนเงิน (บาท)</th>
+              </tr>
+            </thead>
+            <tbody id="compareTableBody">
+              <tr><td colspan="9" class="text-center py-4 text-slate-400">กรุณาเลือกตัวกรองแผนกหรือรอบเดือน...</td></tr>
+            </tbody>
+            <tfoot class="bg-slate-50 font-bold border-t">
+              <tr>
+                <td colspan="8" class="p-3 text-right">รวมเป็นเงินทั้งสิ้น (บาท):</td>
+                <td class="p-3 text-right text-purple-900 text-sm font-extrabold" id="grandTotalText">0.00</td>
+              </tr>
+              <tr>
+                <td colspan="9" class="p-2 text-right text-slate-600 font-normal italic" id="bahtTextThai">(-ศูนย์บาทถ้วน-)</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="p-4 bg-slate-100 border-t flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div id="amountWarning" class="text-xs font-bold text-amber-700 flex items-center">
+            <i class="fa-solid fa-circle-info mr-1"></i> วงเงินไม่เกิน 10,000 บาท (ออกรายงานขอความเห็นชอบได้)
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnOver10kFlow" onclick="openWizardModal()" class="hidden px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-xl text-xs transition shadow flex items-center gap-1.5">
+              <i class="fa-solid fa-list-check"></i> จัดการฟอร์ม (> 10,000 วิธีเฉพาะเจาะจง)
+            </button>
+            <button id="btnWordReport" onclick="downloadWordReport()" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-xl text-xs transition shadow flex items-center gap-1.5">
+              <i class="fa-solid fa-file-word"></i> ดาวน์โหลด Word (.doc)
+            </button>
+            <button id="btnPeaReport" onclick="generatePeaReport()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl text-xs transition shadow flex items-center gap-1.5">
+              <i class="fa-solid fa-print"></i> พิมพ์ / ดาวน์โหลด PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WIZARD MODAL: จัดการทีละขั้นตอนสำหรับวงเงินเกิน 10,000 บาท -->
+    <div id="wizardModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+        
+        <!-- Header & Progress Tracker -->
+        <div class="p-4 bg-purple-900 text-white flex justify-between items-center shrink-0">
+          <h2 class="font-bold text-base md:text-lg flex items-center">
+            <i class="fa-solid fa-diagram-project mr-2 text-amber-300"></i> ขั้นตอนการจัดซื้อจัดจ้าง (วิธีเฉพาะเจาะจง > 10,000 บาท)
+          </h2>
+          <button onclick="closeWizardModal()" class="text-slate-300 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+
+        <!-- Tracking Banner Steps Bar -->
+        <div class="bg-slate-800 px-4 py-3 border-b shrink-0">
+          <div class="grid grid-cols-4 gap-2 text-center text-xs font-semibold">
+            <button onclick="goToStep(1)" id="stepBtn-1" class="p-2 rounded-lg bg-purple-600 text-white transition flex flex-col items-center gap-1">
+              <span class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">1</span>
+              <span class="truncate w-full">1. รายงานขอซื้อ</span>
+            </button>
+            <button onclick="goToStep(2)" id="stepBtn-2" class="p-2 rounded-lg bg-slate-700 text-slate-300 transition flex flex-col items-center gap-1 hover:bg-slate-600">
+              <span class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">2</span>
+              <span class="truncate w-full">2. หนังสือเชิญชวน</span>
+            </button>
+            <button onclick="goToStep(3)" id="stepBtn-3" class="p-2 rounded-lg bg-slate-700 text-slate-300 transition flex flex-col items-center gap-1 hover:bg-slate-600">
+              <span class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">3</span>
+              <span class="truncate w-full">3. ผลการพิจารณา</span>
+            </button>
+            <button onclick="goToStep(4)" id="stepBtn-4" class="p-2 rounded-lg bg-slate-700 text-slate-300 transition flex flex-col items-center gap-1 hover:bg-slate-600">
+              <span class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">4</span>
+              <span class="truncate w-full">4. ตรวจรับงาน</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step Content Area -->
+        <div class="flex-1 overflow-y-auto p-6 bg-slate-50">
+          
+          <!-- STEP 1 CONTAINER -->
+          <div id="wizardStep1" class="space-y-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+              <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center text-purple-900">
+                <i class="fa-solid fa-file-pen mr-2"></i> ขั้นตอนที่ 1: รายงานขอซื้อพัสดุ
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mb-4">
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">วันที่รายงานขอซื้อ:</label>
+                  <input type="text" id="wzDate1" placeholder="เช่น ๒๑ กันยายน ๒๕๖๙" class="w-full p-2 border rounded bg-white">
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">วงเงินรวม VAT (บาท):</label>
+                  <input type="text" id="wzAmountTotal" placeholder="เช่น 17,615.00" class="w-full p-2 border rounded bg-white font-bold text-purple-900 focus:ring-2 focus:ring-purple-600 outline-none">
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">ชื่อผู้ดำเนินการติดต่อ:</label>
+                  <input type="text" id="wzOperatorName" value="นางสาวพรศิริ เมฆสวี" class="w-full p-2 border rounded bg-white">
+                </div>
+              </div>
+
+              <div class="border-t pt-3">
+                <label class="font-bold text-purple-900 text-xs block mb-2"><i class="fa-solid fa-users mr-1"></i> รายชื่อคณะกรรมการตรวจรับ 3 ท่าน:</label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                  <div class="p-2 bg-purple-50/50 border rounded-lg">
+                    <span class="font-bold text-slate-700 block mb-1">1. ประธานกรรมการ:</span>
+                    <input type="text" id="wzCommName1" value="นายสุรศักดิ์ ยังปักษี" class="w-full p-1.5 border rounded bg-white mb-1">
+                    <input type="text" id="wzCommPos1" value="หผ.กส.กฟส.ลส." class="w-full p-1.5 border rounded bg-white">
+                  </div>
+                  <div class="p-2 bg-purple-50/50 border rounded-lg">
+                    <span class="font-bold text-slate-700 block mb-1">2. กรรมการ:</span>
+                    <input type="text" id="wzCommName2" value="นางสาวดุจฤดี เนตรสุวรรณ์" class="w-full p-1.5 border rounded bg-white mb-1">
+                    <input type="text" id="wzCommPos2" value="ชผ.บร.กฟส.ลส." class="w-full p-1.5 border rounded bg-white">
+                  </div>
+                  <div class="p-2 bg-purple-50/50 border rounded-lg">
+                    <span class="font-bold text-slate-700 block mb-1">3. กรรมการ:</span>
+                    <input type="text" id="wzCommName3" value="นายกลกิจ เลาอารีกิจ" class="w-full p-1.5 border rounded bg-white mb-1">
+                    <input type="text" id="wzCommPos3" value="ซผ.สน.กฟส.ลส." class="w-full p-1.5 border rounded bg-white">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2 CONTAINER -->
+          <div id="wizardStep2" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+              <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center text-purple-900">
+                <i class="fa-solid fa-envelope-open-text mr-2"></i> ขั้นตอนที่ 2: ออกหนังสือแจ้งให้ยื่นใบเสนอราคา
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mb-3">
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">เลขที่หนังสือ (พิมพ์เฉพาะ 5 ตัวท้าย):</label>
+                  <div class="flex items-center">
+                    <span class="text-slate-500 font-bold mr-1">มท ๕๓๐๗.๔๖/กฟส.ลส.</span>
+                    <input type="text" id="wzInviteNo" placeholder="๔๔๕๖๘" class="w-24 p-2 border rounded bg-white font-bold">
+                  </div>
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">วันที่หนังสือเชิญชวน:</label>
+                  <input type="text" id="wzInviteDate" placeholder="เช่น ๒๒ กันยายน ๒๕๖๙" class="w-full p-2 border rounded bg-white">
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">ชื่อร้านค้าผู้รับหนังสือ:</label>
+                  <input type="text" id="wzShopName" placeholder="เช่น ร้านพัฒน์" class="w-full p-2 border rounded bg-white">
+                </div>
+              </div>
+
+              <!-- ช่องกรอกผู้ลงนามในหนังสือเชิญชวน -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs border-t pt-3">
+                <div>
+                  <label class="font-bold text-purple-900 block mb-1"><i class="fa-solid fa-user-pen mr-1"></i>ชื่อ-นามสกุล ผู้ลงนาม:</label>
+                  <input type="text" id="wzInviteSignName" value="นายกิตติพงษ์ โสภาพงษ์" class="w-full p-2 border rounded bg-white font-medium">
+                </div>
+                <div>
+                  <label class="font-bold text-purple-900 block mb-1"><i class="fa-solid fa-id-card mr-1"></i>ตำแหน่งผู้ลงนาม (กด Enter เพื่อขึ้นบรรทัดใหม่ได้อิสระ):</label>
+                  <textarea id="wzInviteSignPos" rows="3" class="w-full p-2 border rounded bg-white font-medium outline-none focus:ring-2 focus:ring-purple-600">ผู้จัดการ การไฟฟ้าส่วนภูมิภาคสาขาหลังสวน</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3 CONTAINER -->
+          <div id="wizardStep3" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+              <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center text-purple-900">
+                <i class="fa-solid fa-square-poll-vertical mr-2"></i> ขั้นตอนที่ 3: บันทึกผลการพิจารณาและขออนุมัติฯ
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mb-3">
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">วันที่บันทึกผลพิจารณา / วันอนุมัติ:</label>
+                  <input type="text" id="wzConsiderDate" placeholder="เช่น ๒๕ กันยายน ๒๕๖๙" class="w-full p-2 border rounded bg-white">
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">เลขที่ลงรับใบเสนอราคา:</label>
+                  <input type="text" id="wzQuotNo" placeholder="เช่น ๘๙٠๓/๒๕๖๙" class="w-full p-2 border rounded bg-white">
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">หมายเลขผู้ขาย (Vendor No.):</label>
+                  <input type="text" id="wzVendorNo" placeholder="เช่น ๒๐๘๘๓๓" class="w-full p-2 border rounded bg-white">
+                </div>
+              </div>
+              <p class="text-xs text-slate-500 italic bg-amber-50 p-2 rounded border border-amber-200">
+                * ข้อ 1.1 จะดึงวันที่จากขั้นตอนที่ 1 และ ข้อ 1.2 จะดึงเลขที่หนังสือเชิญชวนจากขั้นตอนที่ 2 มาลงให้อัตโนมัติ
+              </p>
+            </div>
+          </div>
+
+          <!-- STEP 4 CONTAINER -->
+          <div id="wizardStep4" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+              <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center text-purple-900">
+                <i class="fa-solid fa-file-circle-check mr-2"></i> ขั้นตอนที่ 4: บันทึกผลการตรวจรับงานจัดซื้อ
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mb-3">
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">วันที่ลงรับใบส่งมอบงาน / วันตรวจรับ:</label>
+                  <input type="text" id="wzDeliveryDate" placeholder="เช่น ๓๐ กันยายน ๒๕๖๙" class="w-full p-2 border rounded bg-white">
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">เลขที่ใบส่งมอบงาน:</label>
+                  <input type="text" id="wzDeliveryNo" placeholder="เช่น ๙๐๒ผ/๒๕๖๙" class="w-full p-2 border rounded bg-white">
+                </div>
+              </div>
+              <p class="text-xs text-slate-500 italic bg-amber-50 p-2 rounded border border-amber-200">
+                * ข้อ 1.1 จะดึงวันที่อนุมัติจากขั้นตอนที่ 3 และท้ายบันทึกจะดึงรายชื่อคณะกรรมการตรวจรับทั้ง 3 ท่านมาให้อัตโนมัติ
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Wizard Footer Bar Buttons -->
+        <div class="p-4 bg-slate-100 border-t flex justify-between items-center shrink-0">
+          <button id="btnPrevStep" onclick="changeStep(-1)" class="px-4 py-2 bg-slate-500 hover:bg-slate-600 text-white font-semibold rounded-xl text-xs transition shadow flex items-center gap-1">
+            <i class="fa-solid fa-arrow-left"></i> ย้อนกลับ
+          </button>
+          
+          <div class="flex items-center gap-2">
+            <button onclick="previewCurrentStepForm()" class="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-xl text-xs transition shadow flex items-center gap-1.5">
+              <i class="fa-solid fa-eye"></i> ดูตัวอย่างฟอร์ม (ขั้นตอนที่ <span id="currentStepNum">1</span>)
+            </button>
+            <button id="btnNextStep" onclick="changeStep(1)" class="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white font-semibold rounded-xl text-xs transition shadow flex items-center gap-1">
+              ถัดไป <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PREVIEW MODAL: แสดงตัวอย่างแบบฟอร์มบนจอให้เห็นชัดเจนก่อนพิมพ์ -->
+    <div id="previewModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[90] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] flex flex-col overflow-hidden">
+        <div class="p-4 bg-slate-800 text-white flex justify-between items-center shrink-0">
+          <h3 class="font-bold text-sm md:text-base flex items-center">
+            <i class="fa-solid fa-file-lines mr-2 text-amber-300"></i> ตัวอย่างเอกสารราชการ (สามารถตรวจสอบความถูกต้องก่อนกดพิมพ์)
+          </h3>
+          <button onclick="closePreviewModal()" class="text-slate-300 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-8 bg-slate-100 flex justify-center">
+          <div id="previewContainerContent" class="bg-white p-8 shadow-md rounded border w-full max-w-[750px] min-h-[900px]">
+            <!-- เนื้อหาฟอร์มที่จะถูกดึงมาแสดงตัวอย่าง -->
+          </div>
+        </div>
+
+        <div class="p-4 bg-white border-t flex justify-between items-center shrink-0">
+          <button onclick="closePreviewModal()" class="px-4 py-2 bg-slate-500 hover:bg-slate-600 text-white font-semibold rounded-xl text-xs transition">
+            <i class="fa-solid fa-arrow-left mr-1"></i> กลับไปแก้ไขข้อมูล
+          </button>
+          <button onclick="printFromPreview()" class="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl text-sm transition shadow flex items-center gap-2">
+            <i class="fa-solid fa-print"></i> พิมพ์ / บันทึก PDF หน้านี้
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Section -->
+    <div id="order-form" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
+      <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+        <i class="fa-solid fa-clipboard-user text-purple-700 mr-2"></i> ข้อมูลผู้ส่งรายการสั่งซื้อ
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">แผนก / งานที่ขอเบิก <span class="text-rose-500">*</span></label>
+          <select id="userDepartment" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 outline-none text-sm">
+            <option value="">-- เลือกแผนก/งาน --</option>
+            <option value="แผนกสนับสนุน (ผสน.) และ กฟส.xs">แผนกสนับสนุน (ผสน.) และ กฟส.xs</option>
+            <option value="แผนกบริการและลูกค้าสัมพันธ์ (ผบส.)">แผนกบริการและลูกค้าสัมพันธ์ (ผบส.)</option>
+            <option value="แผนกบริหารรายได้ค่าไฟ (ผบร.)">แผนกบริหารรายได้ค่าไฟ (ผบร.)</option>
+            <option value="แผนกก่อสร้างระบบไฟฟ้า (ผกส.)">แผนกก่อสร้างระบบไฟฟ้า (ผกส.)</option>
+            <option value="แผนกมิเตอร์และหม้อแปลง (ผมต.)">แผนกมิเตอร์และหม้อแปลง (ผมต.)</option>
+            <option value="แผนกปฏิบัติการและบำรุงรักษาระบบไฟฟ้า (ผปบ.)">แผนกปฏิบัติการและบำรุงรักษาระบบไฟฟ้า (ผปบ.)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">ประจำรอบเดือน <span class="text-rose-500">*</span></label>
+          <input type="text" id="orderMonth" class="w-full p-2.5 border border-slate-300 rounded-xl bg-slate-100 text-slate-600 font-medium cursor-not-allowed text-sm" readonly>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catalog -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <h2 class="text-lg font-bold text-slate-800 flex items-center">
+          <i class="fa-solid fa-list-check text-purple-700 mr-2"></i> รายการวัสดุสำนักงาน
+        </h2>
+        <div class="relative w-full md:w-72">
+          <input type="text" id="searchInput" oninput="filterItems()" placeholder="ค้นหาพัสดุ (พิมพ์ชื่อ หรือ ID)..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-600 outline-none">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+        </div>
+      </div>
+     <div class="overflow-x-auto border border-slate-200 rounded-xl">
+        <table class="w-full text-sm text-left border-collapse">
+          <thead>
+            <tr class="bg-purple-50 text-purple-950 border-b border-purple-200">
+              <th class="py-3 px-4 w-28 font-semibold">รหัส</th>
+              <th class="py-3 px-4 font-semibold">รายการวัสดุ</th>
+              <th class="py-3 px-4 w-28 text-center font-semibold">หน่วยนับ</th>
+              <th class="py-3 px-4 w-44 text-center font-semibold">จำนวน</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTableBody" class="divide-y divide-slate-100 bg-white">
+            <tr>
+              <td colspan="4" class="text-center py-8 text-slate-400">กำลังโหลดรายการวัสดุจากระบบ...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Sticky Bottom Bar -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-4 shadow-lg z-30 no-print">
+    <div class="max-w-7xl mx-auto flex flex-row justify-between items-center gap-4">
+      <div>
+        <div class="text-xs text-slate-500">สรุปการเลือก</div>
+        <div class="text-sm font-bold text-purple-900">
+          <span id="selectedCount">0</span> รายการ (<span id="totalQuantity">0</span> ชิ้น)
+        </div>
+      </div>
+      <button id="submitBtn" onclick="submitOrder()" class="px-6 py-2.5 bg-purple-800 hover:bg-purple-900 text-white font-semibold rounded-xl text-sm transition shadow-md flex items-center gap-2">
+        <i class="fa-solid fa-paper-plane"></i> ยืนยันการส่งความต้องการ
+      </button>
+    </div>
+  </div>
+
+  <!-- AREA พิมพ์รายงานส่งร้าน (แบบสรุปยอด) -->
+  <app-document-templates></app-document-templates>
+  <app-confirm-order-modal></app-confirm-order-modal>

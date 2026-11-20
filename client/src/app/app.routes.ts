@@ -1,0 +1,2 @@
+import {Routes} from '@angular/router';import {authGuard,roleGuard} from './core/auth.guard';import {LoginComponent} from './pages/login/login.component';import {LegacyWorkspaceComponent} from './pages/workspace/legacy-workspace.component';import {UsersComponent} from './pages/users/users.component';
+export const routes:Routes=[{path:'login',component:LoginComponent},{path:'',component:LegacyWorkspaceComponent,canActivate:[authGuard]},{path:'users',component:UsersComponent,canActivate:[authGuard,roleGuard('admin')]},{path:'**',redirectTo:''}];
